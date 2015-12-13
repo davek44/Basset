@@ -7,7 +7,7 @@ import sys
 ################################################################################
 # basset_sample.py
 #
-# Sample sequences from an existing databset of sequences as BED file and
+# Sample sequences from an existing dataset of sequences as BED file and
 # activity table.
 ################################################################################
 
