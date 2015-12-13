@@ -19,7 +19,7 @@
 ###### Table
 
 - tab-separated
-- row indexes are chrom:start:end:strand corresponding to [BED](#bed).
+- row indexes are `chrom:start:end:strand` corresponding to [BED](#bed).
 - columns are sample names.
 - entries are 0/1 accessibility/binding/activity.
 
