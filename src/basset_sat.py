@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 from optparse import OptionParser
-import copy, os, pdb, random, subprocess, sys
+import copy, os, pdb, random, sys
 
 import h5py
 import numpy as np
@@ -10,6 +10,8 @@ import seaborn as sns
 
 import dna_io
 from seq_logo import seq_logo
+import subprocess
+from util.utils import message
 
 ################################################################################
 # basset_sat.py
@@ -135,9 +137,8 @@ def main():
     if options.model_hdf5_file is None:
         options.model_hdf5_file = '%s/model_out.h5' % options.out_dir
         torch_cmd = 'basset_sat_predict.lua -center_nt %d %s %s %s' % (options.center_nt, model_file, model_input_hdf5, options.model_hdf5_file)
-        print torch_cmd
-        subprocess.call(torch_cmd, shell=True)
-
+        if subprocess.call(torch_cmd, shell=True):
+            message('Error running basset_sat_predict.lua', 'error')
 
     #################################################################
     # load modification predictions
@@ -212,7 +213,9 @@ def main():
 
             # add to figure
             logo_png = '%s.png' % logo_eps[:-4]
-            subprocess.call('convert -density 300 %s %s' % (logo_eps, logo_png), shell=True)
+            logo_cmd = 'convert -density 300 %s %s' % (logo_eps, logo_png)
+            if subprocess.call(logo_cmd, shell=True):
+                message('Error running convert', 'error')
             logo = Image.open(logo_png)
             ax_logo.imshow(logo)
             ax_logo.set_axis_off()

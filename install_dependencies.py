@@ -3,6 +3,7 @@ from optparse import OptionParser
 import os
 import subprocess
 import sys
+from src.util.utils import message
 
 ################################################################################
 # install_dependencies.py
@@ -17,30 +18,38 @@ import sys
 def main():
     usage = 'usage: %prog [options] arg'
     parser = OptionParser(usage)
+    parser.add_option('--no-cuda', dest='no_cuda', default=False, action='store_true', help='Do not install packages only required for CUDA')
+    parser.add_option('-w', dest='warn_on_error', default=False, action='store_true', help='Print a warning, rather than exit, if a dependency cannot be installed [Default: %default]')
     (options,args) = parser.parse_args()
 
     # confirm luarocks
+    message('Checking for luarocks')
     luarocks_which = subprocess.check_output('which luarocks', shell=True)
     if luarocks_which == '':
-        print >> sys.stderr, 'Please install Torch7 first.'
-        exit(1)
+        message('Please install Torch7 first', 'error')
 
     ############################################################
     # luarocks database
     ############################################################
 
     # install luafilesystem
+    message('Installing luafilesystem')
     cmd = 'luarocks install luafilesystem'
-    subprocess.call(cmd, shell=True)
+    if subprocess.call(cmd, shell=True) and not options.warn_on_error:
+        sys.exit(1)
 
     # install dpnn
+    message('Installing dpnn')
     cmd = 'luarocks install dpnn'
-    subprocess.call(cmd, shell=True)
+    if subprocess.call(cmd, shell=True) and not options.warn_on_error:
+        sys.exit(1)
 
     # install inn
-    cmd = 'luarocks install inn'
-    subprocess.call(cmd, shell=True)
-
+    if not options.no_cuda:
+        message('Installing inn')
+        cmd = 'luarocks install inn'
+        if subprocess.call(cmd, shell=True) and not options.warn_on_error:
+            sys.exit(1)
 
     ############################################################
     # luarocks from github
@@ -50,12 +59,16 @@ def main():
 
     # install torch-hdf5
     cmd = 'git clone https://github.com/deepmind/torch-hdf5.git'
-    subprocess.call(cmd, shell=True)
+    message('Installing torch-hdf5')
+    if subprocess.call(cmd, shell=True) and not options.warn_on_error:
+        sys.exit(1)
 
     os.chdir('torch-hdf5')
 
     cmd = 'luarocks make'
-    subprocess.call(cmd, shell=True)
+    message('Installing make')
+    if subprocess.call(cmd, shell=True) and not options.warn_on_error:
+        sys.exit(1)
 
     os.chdir('..')
 

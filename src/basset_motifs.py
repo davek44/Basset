@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 from optparse import OptionParser
-import copy, os, pdb, random, shutil, subprocess, time
+import copy, os, pdb, random, shutil, time
 
 import h5py
 import matplotlib
@@ -11,8 +11,9 @@ import pandas as pd
 from scipy.stats import spearmanr
 import seaborn as sns
 from sklearn import preprocessing
-
+import subprocess
 import dna_io
+from util.utils import message
 
 ################################################################################
 # basset_motifs.py
@@ -93,8 +94,8 @@ def main():
     if options.model_hdf5_file is None:
         options.model_hdf5_file = '%s/model_out.h5' % options.out_dir
         torch_cmd = 'basset_motifs_predict.lua %s %s %s' % (model_file, test_hdf5_file, options.model_hdf5_file)
-        print torch_cmd
-        subprocess.call(torch_cmd, shell=True)
+        if subprocess.call(torch_cmd, shell=True):
+            message('Error running basset_motifs_predict.lua', 'error')
 
     # load model output
     model_hdf5_in = h5py.File(options.model_hdf5_file, 'r')
@@ -146,7 +147,9 @@ def main():
     # annotate filters
     #################################################################
     # run tomtom
-    subprocess.call('tomtom -dist pearson -thresh 0.1 -oc %s/tomtom %s/filters_meme.txt %s' % (options.out_dir, options.out_dir, options.meme_db), shell=True)
+    tomtom_cmd = 'tomtom -dist pearson -thresh 0.1 -oc %s/tomtom %s/filters_meme.txt %s' % (options.out_dir, options.out_dir, options.meme_db)
+    if subprocess.call(tomtom_cmd, shell=True):
+        message('Error running tomtom', 'error')
 
     # read in annotations
     filter_names = name_filters(num_filters, '%s/tomtom/tomtom.txt'%options.out_dir, options.meme_db)
@@ -627,7 +630,8 @@ def plot_filter_logo(filter_outs, filter_size, seqs, out_prefix, raw_t=0, maxpct
     # make weblogo
     if filter_count > 0:
         weblogo_cmd = 'weblogo %s < %s.fa > %s.eps' % (weblogo_opts, out_prefix, out_prefix)
-        subprocess.call(weblogo_cmd, shell=True)
+        if subprocess.call(weblogo_cmd, shell=True):
+            message('Error running weblogo', 'error')
 
 
 ################################################################################

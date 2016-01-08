@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 from optparse import OptionParser
-import os, re, subprocess, tempfile
+import os, re, tempfile
+import subprocess
+from util.utils import message
 
 ################################################################################
 # seq_logo
@@ -33,7 +35,8 @@ def seq_logo(seq, heights, out_eps, weblogo_args=''):
 	# print figure to a temp eps file
 	eps_fd, eps_file = tempfile.mkstemp()
 	weblogo_cmd = 'weblogo --errorbars NO --show-xaxis NO --show-yaxis NO --fineprint "" -c classic -n %d %s < %s > %s' % (len(seq), weblogo_args, fasta_file, eps_file)
-	subprocess.call(weblogo_cmd, shell=True)
+        if subprocess.call(weblogo_cmd, shell=True):
+            message('Error running weblogo', 'error')
 
 	# copy eps file over and write in my own heights
 	start_stack_re = re.compile('^\(\d*\) StartStack')

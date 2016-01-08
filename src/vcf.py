@@ -31,6 +31,7 @@ def snps_seq1(snps, genome_fasta, seq_len):
 
     Return:
         seq_vecs (array) : one hot coded sequences surrounding the SNPs
+        seqs [str] : raw sequences
         seq_headers [str] : headers for sequences
     '''
     left_len = seq_len/2 - 1

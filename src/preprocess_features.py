@@ -2,11 +2,12 @@
 from optparse import OptionParser
 import gzip
 import os
-import subprocess
 import sys
 
 import h5py
 import numpy as np
+import preprocess
+from util.utils import message
 
 ################################################################################
 # preprocess_features.py
@@ -144,7 +145,8 @@ def main():
         chrom,strand = chrom_key
         chrom_sbed = '%s_%s_%s_sort.bed' % (options.out_prefix,chrom,strand)
         sort_cmd = 'sortBed -i %s > %s' % (chrom_files[chrom_key], chrom_sbed)
-        subprocess.call(sort_cmd, shell=True)
+        if subprocess.call(sort_cmd, shell=True):
+            message('Error running SortBed. Is bedtools installed?', 'error')
         os.remove(chrom_files[chrom_key])
         chrom_files[chrom_key] = chrom_sbed
 

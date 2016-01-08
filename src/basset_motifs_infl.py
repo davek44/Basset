@@ -2,16 +2,16 @@
 from optparse import OptionParser
 import os
 import random
-import subprocess
 import sys
 
 import numpy as np
 import pandas as pd
 from sklearn import preprocessing
 import h5py
-
+import subprocess
 import matplotlib.pyplot as plt
 import seaborn as sns
+from util.utils import message
 
 ################################################################################
 # basset_motifs_infl.py
@@ -105,7 +105,8 @@ def main():
 
         options.model_hdf5_file = '%s/model_out.h5' % options.out_dir
         torch_cmd = 'basset_motifs_infl.lua -batch_size %d %s %s %s %s' % (options.batch_size, torch_opts, model_file, test_hdf5_file, options.model_hdf5_file)
-        subprocess.call(torch_cmd, shell=True)
+        if subprocess.call(torch_cmd, shell=True):
+            message('Error running basset_motifs_infl.lua', 'error')
 
     # load model output
     model_hdf5_in = h5py.File(options.model_hdf5_file, 'r')
