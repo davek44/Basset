@@ -23,7 +23,7 @@ Basset relies on the environmental variable BASSETDIR to orient itself. In your 
 To make the code available for use in any directory, also write
 ```
     export PATH=$BASSETDIR/src:$PATH
-    export LUAPATH=$BASSETDIR/src:$LUAPATH
+    export LUA_PATH=$BASSETDIR/src/?.lua;;LUA_PATH
     export PYTHONPATH=$BASSETDIR/src:$PYTHONPATH
 ```
 
